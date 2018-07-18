@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Form\ContactType;
-use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,15 +12,32 @@ class ContactController extends AbstractController
     /**
      * @Route("/contact", name="contact")
      */
-    // protected function createForm(string $type, $data = null, array $options = array()): FormInterface
-    public function index(Request $request)
+    public function index(Request $request, \Swift_Mailer $mailer)
     {
         $form = $this->createForm(ContactType::class);
-        // return $this->render('contact/index.html.twig');
+
         $form->handleRequest($request);
-        // dump($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $contactFormData = $form->getData();
+
+             $message = (new \Swift_Message('You Got Mail!'))
+                ->setFrom($contactFormData['from'])
+                ->setTo('coolorc@mailinator.com')
+                ->setBody(
+                    $contactFormData['message'],
+                    'text/plain'
+                )
+            ;
+ 
+            $mailer->send($message);
+ 
+            return $this->redirectToRoute('contact');
+        }
+
         return $this->render('contact/index.html.twig', [
-             'our_form' => $form->createView(),
-               ]);
+            'our_form' => $form->createView(),
+        ]);
     }
 }

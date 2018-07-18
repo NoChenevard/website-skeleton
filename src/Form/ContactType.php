@@ -17,7 +17,7 @@ class ContactType extends AbstractType
             ->add('field_name')
             ->add('name')
             ->add('from', EmailType::class)
-            ->add('dateOfBirth', DateTimeType::class)
+            ->add('dateOfBirth', DateTimeType::class, array('input'=> 'timestamp') )
             ->add('message', TextareaType::class)
         ;
     }
